@@ -1,26 +1,228 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-ink: #03060f;
+  --color-accent: #5ec8ff;
+  --color-accent-2: #8b7bff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  background: #03060f;
+  color: #e6edf7;
+  overflow: hidden;
+}
+
+@layer components {
+/* ── Glass panels ───────────────────────────────────────── */
+.glass {
+  background: linear-gradient(180deg, rgba(14, 22, 40, 0.78), rgba(6, 10, 22, 0.82));
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(148, 197, 255, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 197, 255, 0.25) transparent;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition;
+  border-color: rgba(148, 197, 255, 0.16);
+  background: rgba(148, 197, 255, 0.05);
+}
+.chip:hover {
+  border-color: rgba(94, 200, 255, 0.45);
+  background: rgba(94, 200, 255, 0.1);
+}
+.chip[data-on="true"] {
+  border-color: rgba(94, 200, 255, 0.8);
+  background: linear-gradient(135deg, rgba(94, 200, 255, 0.25), rgba(139, 123, 255, 0.22));
+  color: white;
+  box-shadow: 0 0 18px rgba(94, 200, 255, 0.25);
+}
+
+.btn-primary {
+  @apply rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition;
+  background: linear-gradient(135deg, #2aa7f5, #7a5cff);
+  box-shadow: 0 6px 24px rgba(94, 160, 255, 0.35);
+}
+.btn-primary:hover {
+  filter: brightness(1.12);
+}
+.btn-ghost {
+  @apply rounded-xl border px-3 py-2 text-sm transition;
+  border-color: rgba(148, 197, 255, 0.16);
+  background: rgba(148, 197, 255, 0.05);
+}
+.btn-ghost:hover {
+  border-color: rgba(94, 200, 255, 0.45);
+}
+
+}
+
+/* ── Globe markers ──────────────────────────────────────── */
+.ge-globe {
+  cursor: grab;
+}
+.ge-globe:active {
+  cursor: grabbing;
+}
+
+.ge-marker {
+  --marker: #5ec8ff;
+  position: relative;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+.ge-destination {
+  --marker: #ffc46b;
+}
+.ge-marker .ge-dot {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--marker);
+  box-shadow: 0 0 6px 2px var(--marker), 0 0 14px 4px color-mix(in srgb, var(--marker) 45%, transparent);
+  transition: transform 0.2s;
+}
+.ge-marker .ge-pulse {
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--marker);
+  opacity: 0;
+}
+.ge-marker:hover .ge-dot,
+.ge-marker.selected .ge-dot {
+  transform: scale(1.6);
+}
+.ge-marker.match .ge-pulse,
+.ge-marker.selected .ge-pulse {
+  animation: ge-pulse 1.8s ease-out infinite;
+}
+.ge-marker.selected {
+  --marker: #ffffff;
+  z-index: 10;
+}
+.ge-marker.dim {
+  opacity: 0.22;
+}
+.ge-marker .ge-label {
+  position: absolute;
+  left: 10px;
+  top: -10px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #e6f4ff;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(4, 10, 24, 0.72);
+  border: 1px solid color-mix(in srgb, var(--marker) 40%, transparent);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.ge-marker .ge-temp {
+  font-weight: 700;
+  color: var(--marker);
+}
+.ge-zoomed .ge-marker .ge-label,
+.ge-weather:not(.ge-far) .ge-marker .ge-label,
+.ge-marker:hover .ge-label,
+.ge-marker.selected .ge-label,
+.ge-marker.match .ge-label {
+  opacity: 1;
+  transform: none;
+}
+.ge-marker.dim .ge-label {
+  opacity: 0 !important;
+}
+.ge-weather .ge-marker .ge-dot {
+  width: 10px;
+  height: 10px;
+  left: -5px;
+  top: -5px;
+}
+
+@keyframes ge-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.ge-tooltip {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(4, 10, 24, 0.85);
+  border: 1px solid rgba(148, 197, 255, 0.25);
+  color: #e6f4ff;
+}
+
+/* ── Panels ─────────────────────────────────────────────── */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes slide-in-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.panel-enter {
+  animation: slide-in-up 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (min-width: 768px) {
+  .panel-enter {
+    animation-name: slide-in-right;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, rgba(148, 197, 255, 0.06), rgba(148, 197, 255, 0.14), rgba(148, 197, 255, 0.06));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
 }
